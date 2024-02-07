@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Weather App</title>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+   </head>
+   <body style="background-image: url(back.jpg);
+      /*  background-repeat: no-repeat;*/
+      background-size: cover;
+      background-position: fixed;">
+      <style>
+         .btn-hover {
+         transition: background-color 0.3s ease;
+         }
+         .btn-hover:hover {
+         background-color: #dddddd;
+         }
+      </style>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+      <script>
+         function clear_fields(){
+             $("#cityName").val("")
+             $("#demo").removeClass("show")
+             $("#table").attr('hidden','hidden');
+             $("#details").attr('hidden','hidden')
+              $("#clear").attr('hidden','hidden')
+             $("#card").attr('hidden','hidden')
+             $("#name").text("")
+             $("#text").text("")
+             $('img').removeAttr('src');
+             
+         }
+         function myFunction(){
+             try{
+             const xhttp=new XMLHttpRequest();
+             xhttp.onload=function(){
+              console.log("ON LOAD CALLED.");
+              // console.log(xhttp.responseText)
+              try{
+              const obj = JSON.parse(xhttp.responseText);
+              // $("#cityName").val("")
+         
+              $("#name").text(obj.location.name)
+              $("#text").text(obj.current.condition.text)
+              $("img").attr('src','http:'+obj.current.condition.icon)
+              //Details
+              $("#city").text(obj.location.name)
+              $("#region").text(obj.location.region)
+              $("#country").text(obj.location.country)
+              $("#latitude").text(obj.location.lat)
+              $("#longitude").text(obj.location.lon)
+              $("#local_time").text(obj.location.localtime)
+              $("#last_updated_time").text(obj.current.last_updated)
+              $("#temperature_in_celsius").text(obj.current.temp_c)
+              $("#celsius").text(obj.current.temp_c+' °C')
+              $("#temperature_in_fahrenheit").text(obj.current.temp_f)
+              $("#is_day").text(obj.current.is_day==1 ? "Yes":"No")
+              if(obj.current.is_day==0)
+              {
+                $("#card").css('background-color','darkblue')  
+                $("#card").css('background-image','url(night.jpg)')  
+                $("#name").css('color','white')
+                $("#celsius").css('color','white')
+                $("#text").css('color','white')
+              }
+              if(obj.current.is_day==1)
+              {
+                $("#card").css('background-color','#F0FFFF')  
+                $("#card").css('background-image','url(day.jpg)') 
+                $("#name").css('color','black')
+                $("#text").css('color','black')
+                $("#celsius").css('color','black')
+              }
+              
+              $("#wind_mph").text(obj.current.wind_mph)
+              $("#wind_kph").text(obj.current.wind_kph)
+              $("#wind_degree").text(obj.current.wind_degree)
+              $("#wind_dir").text(obj.current.wind_dir)
+              $("#pressure_mb").text(obj.current.pressure_mb)
+              $("#pressure_in").text(obj.current.pressure_in)
+              $("#precip_mm").text(obj.current.precip_mm)
+              $("#precip_in").text(obj.current.precip_in)
+              $("#humidity").text(obj.current.humidity)
+              $("#cloud").text(obj.current.cloud)
+              $("#feelslike_c").text(obj.current.feelslike_c)
+              $("#feelslike_f").text(obj.current.feelslike_f)
+              $("#vis_km").text(obj.current.vis_km)
+              $("#vis_miles").text(obj.current.vis_miles)
+              $("#uv").text(obj.current.uv)
+              $("#gust_mph").text(obj.current.gust_mph)
+              $("#gust_kph").text(obj.current.gust_kph)
+              $("#card").removeAttr("hidden")
+              $("#details").removeAttr("hidden")
+              $("#clear").removeAttr("hidden")
+              $("#details").css('color','white');
+              $("#clear").css('color','white');
+              $("#table").removeAttr('hidden');
+              $("td").css('color','white');
+              $("th").css('color','white');
+          }
+              catch(error){
+                 
+                 $("#cityName").val("")
+                 $("#demo").removeClass("show")
+             $("#table").attr('hidden','hidden');
+             $("#details").attr('hidden','hidden')
+             $("#clear").attr('hidden','hidden')
+             $("#card").attr('hidden','hidden')
+             $("#name").text("")
+              $("#text").text("")
+              $('img').removeAttr('src');
+                  alert("Invalid City Name")
+              }
+              
+          }
+          if($("#cityName").val()==""){
+             alert("Please Input Valid City Name.")
+             return;
+          }
+          xhttp.open('GET','http://api.weatherapi.com/v1/current.json?key=de3d77916777484e83f83033240602&q='+$("#cityName").val()+'&aqi=no');
+             xhttp.send();
+             console.log("FUNCTION CALLED.");}
+             catch(error){
+                 alert("Error.")
+             }
+         }
+         function handle(e){
+         if(e.keyCode === 13){
+             myFunction();
+         }
+         }
+         async function getSuggestions(value) {
+         const apiUrl = 'http://api.weatherapi.com/v1/search.json?key=de3d77916777484e83f83033240602&q='+value;
+         try {
+             const response = await fetch(apiUrl);
+             const data = await response.json();
+             const cityNamesDatalist = $('#cityNames');
+             // cityNamesDatalist.innerHTML = '';
+             cityNamesDatalist.empty(); 
+             console.log(data)
+             if (data && data.length > 0) {
+                 data.map(city => {
+                      const option = $("<option></option>").attr("value", city.name);
+                     cityNamesDatalist.append(option);
+                 });
+             }
+         } catch (error) {
+             console.error('Error fetching city suggestions:', error);
+         }
+         }
+      </script>
+      <div class="container mt-5 d-flex flex-column align-items-center">
+         <h1 style="color: darkblue; font-size: 72px; font-weight: bold;" class="mb-4">Weather Forecast</h1>
+         <div class="mb-3">
+            <input class="form-control" list="cityNames" oninput="getSuggestions(this.value)" onkeypress="handle(event)" placeholder="Enter City Name" type="text" name="cityName" id="cityName"/>
+            <datalist id="cityNames"></datalist>
+         </div>
+         <div class="mb-3">
+            <button class="btn border btn-hover" onclick="myFunction()" type="button">Get Weather</button>
+         </div>
+         <div class="container mt-4 mb-2 d-flex justify-content-center align-items-center">
+            <div style="border-radius: 20px; padding-right: 70px;padding-left: 70px;" class="card border border-dark" id="card" hidden>
+               <div class="mb-3 text-center">
+                  <label style="font-size: 28px;" class="form-label mt-2" id="name"></label>
+               </div>
+               <div class="mb-3 text-center">
+                  <label style="font-size: 28px;" class="form-label" id="celsius"></label>
+               </div>
+               <div class="mb-3 text-center">
+                  <img name="img" id="img" alt="Weather Icon">
+               </div>
+               <div class="mb-3 text-center">
+                  <label style="font-size: 28px;" class="form-label" id="text"></label>
+               </div>
+            </div>
+         </div>
+         <div class="mb-3">
+            <button type="button" class="btn border btn-hover" data-bs-toggle="collapse" id="details" data-bs-target="#demo" hidden>Details</button>
+            <button class="btn border btn-hover" onclick="clear_fields()" id="clear" hidden>Clear</button>
+            <div id="demo" class="collapse">
+               <table class="mt-2 table table-striped" id="table">
+                  <tr>
+                     <th>City</th>
+                     <td id="city"></td>
+                  </tr>
+                  <tr>
+                     <th>Region</th>
+                     <td id="region"></td>
+                  </tr>
+                  <tr>
+                     <th>Country</th>
+                     <td id="country"></td>
+                  </tr>
+                  <tr>
+                     <th>Latitude</th>
+                     <td id="latitude"></td>
+                  </tr>
+                  <tr>
+                     <th>Longitude</th>
+                     <td id="longitude"></td>
+                  </tr>
+                  <tr>
+                     <th>Local Time</th>
+                     <td id="local_time"></td>
+                  </tr>
+                  <tr>
+                     <th>Last Updated Time</th>
+                     <td id="last_updated_time"></td>
+                  </tr>
+                  <tr>
+                     <th>Temperature in Celsius</th>
+                     <td id="temperature_in_celsius"></td>
+                  </tr>
+                  <tr>
+                     <th>Temperature in Fahrenheit</th>
+                     <td id="temperature_in_fahrenheit"></td>
+                  </tr>
+                  <tr>
+                     <th>Is Day?</th>
+                     <td id="is_day"></td>
+                  </tr>
+                  <tr>
+                     <th>wind_mph</th>
+                     <td id="wind_mph"></td>
+                  </tr>
+                  <tr>
+                     <th>wind_kph</th>
+                     <td id="wind_kph"></td>
+                  </tr>
+                  <tr>
+                     <th>wind_degree</th>
+                     <td id="wind_degree"></td>
+                  </tr>
+                  <tr>
+                     <th>wind_dir</th>
+                     <td id="wind_dir"></td>
+                  </tr>
+                  <tr>
+                     <th>pressure_mb</th>
+                     <td id="pressure_mb"></td>
+                  </tr>
+                  <tr>
+                     <th>pressure_in</th>
+                     <td id="pressure_in"></td>
+                  </tr>
+                  <tr>
+                     <th>precip_mm</th>
+                     <td id="precip_mm"></td>
+                  </tr>
+                  <tr>
+                     <th>precip_in</th>
+                     <td id="precip_in"></td>
+                  </tr>
+                  <tr>
+                     <th>humidity</th>
+                     <td id="humidity"></td>
+                  </tr>
+                  <tr>
+                     <th>cloud</th>
+                     <td id="cloud"></td>
+                  </tr>
+                  <tr>
+                     <th>feelslike_c</th>
+                     <td id="feelslike_c"></td>
+                  </tr>
+                  <tr>
+                     <th>feelslike_f</th>
+                     <td id="feelslike_f"></td>
+                  </tr>
+                  <tr>
+                     <th>vis_km</th>
+                     <td id="vis_km"></td>
+                  </tr>
+                  <tr>
+                     <th>vis_miles</th>
+                     <td id="vis_miles"></td>
+                  </tr>
+                  <tr>
+                     <th>uv</th>
+                     <td id="uv"></td>
+                  </tr>
+                  <tr>
+                     <th>gust_mph</th>
+                     <td id="gust_mph"></td>
+                  </tr>
+                  <tr>
+                     <th>gust_kph</th>
+                     <td id="gust_kph"></td>
+                  </tr>
+               </table>
+            </div>
+         </div>
+      </div>
+   </body>
+</html>
