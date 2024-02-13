@@ -45,7 +45,7 @@
          
               $("#name").text(obj.location.name)
               $("#text").text(obj.current.condition.text)
-              $("img").attr('src','http:'+obj.current.condition.icon)
+              $("img").attr('src','https:'+obj.current.condition.icon)
               //Details
               $("#city").text(obj.location.name)
               $("#region").text(obj.location.region)
@@ -120,7 +120,7 @@
              alert("Please Input Valid City Name.")
              return;
           }
-          xhttp.open('GET','http://api.weatherapi.com/v1/current.json?key=de3d77916777484e83f83033240602&q='+$("#cityName").val()+'&aqi=no');
+          xhttp.open('GET','https://api.weatherapi.com/v1/current.json?key=de3d77916777484e83f83033240602&q='+$("#cityName").val()+'&aqi=no');
              xhttp.send();
              console.log("FUNCTION CALLED.");}
              catch(error){
@@ -133,7 +133,7 @@
          }
          }
          async function getSuggestions(value) {
-         const apiUrl = 'http://api.weatherapi.com/v1/search.json?key=de3d77916777484e83f83033240602&q='+value;
+         const apiUrl = 'https://api.weatherapi.com/v1/search.json?key=de3d77916777484e83f83033240602&q='+value;
          try {
              const response = await fetch(apiUrl);
              const data = await response.json();
